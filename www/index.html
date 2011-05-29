@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+    <head>
+        <!-- Change this if you want to allow scaling -->
+        <meta name="viewport" content="width=default-width; user-scalable=no" />
+        
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8">
+            
+            <title>FileDownLoadApp</title>
+            
+            <!-- iPad/iPhone specific css below, add after your main css >
+             <link rel="stylesheet" media="only screen and (max-device-width: 1024px)" href="ipad.css" type="text/css" />        
+             <link rel="stylesheet" media="only screen and (max-device-width: 480px)" href="iphone.css" type="text/css" />        
+             -->
+            <script type="text/javascript" charset="utf-8" src="phonegap.0.9.5.min.js"></script>
+            <script type="text/javascript" charset="utf-8" src="fileDownload.js"></script>
+            
+            <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/base/jquery-ui.css" rel="stylesheet" type="text/css"/>
+            <link href="http://jqueryui.com/demos/demos.css" rel="stylesheet" type="text/css"/>
+            <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+            <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/jquery-ui.min.js"></script>
+            
+            <style>
+                .ui-progressbar-value { background-image: url(http://jqueryui.com/demos/progressbar/images/pbar-ani.gif); }
+            </style>
+            
+            <script type="text/javascript" charset="utf-8">
+                
+                
+                // If you want to prevent dragging, uncomment this section
+                /*
+                 function preventBehavior(e) 
+                 { 
+                 e.preventDefault(); 
+                 };
+                 document.addEventListener("touchmove", preventBehavior, false);
+                 */
+                
+                function onBodyLoad()
+                {
+                    document.addEventListener("deviceready",onDeviceReady,false);
+                }
+                
+                /* When this function is called, PhoneGap has been initialized and is ready to roll */
+                function onDeviceReady()
+                {
+                    $("button").button();
+                    $("button").click(function(){
+                        // reset progressBar
+                        $("#progressbar").progressbar({ value: false });
+                                      
+                        // 16384.rnd 16 Mb file
+                        fileDownloadMgr.downloadFile("http://test-debit.free.fr/16384.rnd","test.data","DownloadManager.app/www",
+                             function(data) // Success callback
+                             {
+                                 $("#progressbar").progressbar({ value: 100 });
+                             },
+                             function(error) // Fail callback
+                             {
+                                 alert("Error downloading "+error);
+                             },
+                             function(data, total, speed) // Progress callback
+                             {
+                                var percent = 100 / total * data;
+                                $("#progressbar").progressbar({ value: percent });
+                                $("#percentValue").html(percent.toFixed(0)+" %");
+                                $("#receivedBytes").html((data/1024).toFixed(0)+" kb / "+(total/1024).toFixed(0)+" kb");
+                                $("#speed").html((speed/1024).toFixed(0)+" kb/sec");
+                                this(data);
+                             }
+                        );
+                                      
+                    });
+                    
+                }
+                
+                
+                </script>
+            </head>
+    <body onload="onBodyLoad()">
+        <button style="">Start</button>
+
+        <div>
+            <div id="percentValue"></div>
+            <div id="receivedBytes"></div>
+            <div id="speed"></div>
+            <div id="progressbar"></div>
+        </div>
+    </body>
+</html>
